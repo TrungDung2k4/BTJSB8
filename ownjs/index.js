@@ -1,4 +1,17 @@
 var dsnv = new danhSachNhanVien();
+function kiemTraThongTin(TT) {
+  var kiemTraHopLe = true;
+  kiemTraHopLe &=
+    kiemTraTaiKhoan(TT.taiKhoan, "#tbTKNV") &&
+    kiemTraHoTen(TT.hoTen, "#tbTen") &&
+    kiemTraEmail(TT.email, "#tbEmail") &&
+    kiemTraMatKhau(TT.matKhau, "#tbMatKhau") &&
+    kiemTraNgayLam(TT.ngayLam, "#tbNgay") &&
+    kiemTraLuongCoBan(TT.luongCoBan, "#tbLuongCB") &&
+    kiemTraChucVu(TT.chucVu, "#tbChucVu") &&
+    kiemTraGioLamTrongThang(TT.gioLamTrongThang, "#tbGiolam");
+  return kiemTraHopLe;
+}
 function layThongTin() {
   var tk = document.querySelector("#tknv").value;
   var ht = document.querySelector("#name").value;
@@ -26,7 +39,11 @@ function hienThiThongTin(DS) {
         <td>${DS[i].loaiNhanVien()}</td>
         <td><button class="btn btn-danger" onclick="xoaThongTin('${
           DS[i].taiKhoan
-        }')">Xóa</button></td>
+        }')">Xóa</button>
+        <button class="btn btn-warning" data-toggle="modal" data-target="#myModal" onclick="suaThongTin('${
+          DS[i].taiKhoan
+        }')">Cập Nhật</button>
+        </td>
     </tr>`;
   }
   document.querySelector("#tableDanhSach").innerHTML = thongTin;
@@ -37,7 +54,24 @@ function xoaThongTin(TK) {
   }
   hienThiThongTin(dsnv.nhanVien);
 }
+function suaThongTin(TK) {
+  for (let i = 0; i < dsnv.nhanVien.length; i++) {
+    if (dsnv.nhanVien[i].taiKhoan === TK) {
+      document.querySelector("#tknv").disabled = true;
+      document.querySelector("#tknv").value = dsnv.nhanVien[i].taiKhoan;
+      document.querySelector("#name").value = dsnv.nhanVien[i].hoTen;
+      document.querySelector("#email").value = dsnv.nhanVien[i].email;
+      document.querySelector("#password").value = dsnv.nhanVien[i].matKhau;
+      document.querySelector("#datepicker").value = dsnv.nhanVien[i].ngayLam;
+      document.querySelector("#luongCB").value = dsnv.nhanVien[i].luongCoBan;
+      document.querySelector("#chucvu").value = dsnv.nhanVien[i].chucVu;
+      document.querySelector("#gioLam").value =
+        dsnv.nhanVien[i].gioLamTrongThang;
+    }
+  }
+}
 function xoaDuLieu() {
+  document.querySelector("#tknv").disabled = false;
   document.querySelector("#tknv").value = "";
   document.querySelector("#name").value = "";
   document.querySelector("#email").value = "";
@@ -49,17 +83,7 @@ function xoaDuLieu() {
 }
 document.querySelector("#btnThemNV").addEventListener("click", () => {
   var thongTin = layThongTin();
-  var thongTinHopLe = true;
-  thongTinHopLe &=
-    kiemTraTaiKhoan(thongTin.taiKhoan, "#tbTKNV") &&
-    kiemTraHoTen(thongTin.hoTen, "#tbTen") &&
-    kiemTraEmail(thongTin.email, "#tbEmail") &&
-    kiemTraMatKhau(thongTin.matKhau, "#tbMatKhau") &&
-    kiemTraNgayLam(thongTin.ngayLam, "#tbNgay") &&
-    kiemTraLuongCoBan(thongTin.luongCoBan, "#tbLuongCB") &&
-    kiemTraChucVu(thongTin.chucVu, "#tbChucVu") &&
-    kiemTraGioLamTrongThang(thongTin.gioLamTrongThang, "#tbGiolam");
-  if (thongTinHopLe) {
+  if (kiemTraThongTin(thongTin)) {
     dsnv.themNhanVien(thongTin);
     hienThiThongTin(dsnv.nhanVien);
     xoaDuLieu();
@@ -72,30 +96,14 @@ document.querySelector("#btnTimNV").addEventListener("click", () => {
   );
   document.querySelector("#searchName").value = "";
 });
+document.querySelector("#btnDong").addEventListener("click", () => xoaDuLieu());
 document.querySelector("#btnCapNhat").addEventListener("click", () => {
-  var taiKhoanCapNhat = document.querySelector("#tknv").value;
-  var kiemTra = false;
-  for (let i = 0; i < dsnv.nhanVien.length; i++) {
-    if (dsnv.nhanVien[i].taiKhoan === taiKhoanCapNhat) {
-      kiemTra = true;
-      let thongTinCapNhat = layThongTin();
-      let kiemTraHopLe = true;
-      kiemTraHopLe &=
-        kiemTraHoTen(thongTinCapNhat.hoTen, "#tbTen") &&
-        kiemTraEmail(thongTinCapNhat.email, "#tbEmail") &&
-        kiemTraMatKhau(thongTinCapNhat.matKhau, "#tbMatKhau") &&
-        kiemTraNgayLam(thongTinCapNhat.ngayLam, "#tbNgay") &&
-        kiemTraLuongCoBan(thongTinCapNhat.luongCoBan, "#tbLuongCB") &&
-        kiemTraChucVu(thongTinCapNhat.chucVu, "#tbChucVu") &&
-        kiemTraGioLamTrongThang(thongTinCapNhat.gioLamTrongThang, "#tbGiolam");
-      if (kiemTraHopLe) dsnv.capNhatNhanVien(thongTinCapNhat);
+  var thongTinCapNhat = layThongTin();
+  if (kiemTraThongTin(thongTinCapNhat)) {
+    for (let i = 0; i < dsnv.nhanVien.length; i++) {
+      if (dsnv.nhanVien[i].taiKhoan === thongTinCapNhat.taiKhoan)
+        dsnv.nhanVien[i] = thongTinCapNhat;
     }
-  }
-  if (!kiemTra)
-    document.querySelector("#tbTKNV").innerHTML =
-      "Không tìm thấy tài khoản cần cập nhật";
-  else {
     hienThiThongTin(dsnv.nhanVien);
-    xoaDuLieu();
   }
 });
