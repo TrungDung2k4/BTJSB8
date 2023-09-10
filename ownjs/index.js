@@ -1,4 +1,20 @@
 var dsnv = new danhSachNhanVien();
+if (localStorage.getItem("DSNV")) {
+  dsnv.nhanVien = JSON.parse(localStorage.getItem("DSNV")).map(
+    (DL) =>
+      new nhanVien(
+        DL.taiKhoan,
+        DL.hoTen,
+        DL.email,
+        DL.matKhau,
+        DL.ngayLam,
+        DL.luongCoBan,
+        DL.chucVu,
+        DL.gioLamTrongThang
+      )
+  );
+  hienThiThongTin(dsnv.nhanVien);
+}
 function kiemTraThongTin(TT) {
   var kiemTraHopLe = true;
   kiemTraHopLe &=
@@ -53,6 +69,7 @@ function xoaThongTin(TK) {
     if (dsnv.nhanVien[i].taiKhoan === TK) dsnv.nhanVien.splice(i, 1);
   }
   hienThiThongTin(dsnv.nhanVien);
+  localStorage.setItem("DSNV", JSON.stringify(dsnv.nhanVien));
 }
 function suaThongTin(TK) {
   for (let i = 0; i < dsnv.nhanVien.length; i++) {
@@ -87,6 +104,7 @@ document.querySelector("#btnThemNV").addEventListener("click", () => {
     dsnv.themNhanVien(thongTin);
     hienThiThongTin(dsnv.nhanVien);
     xoaDuLieu();
+    localStorage.setItem("DSNV", JSON.stringify(dsnv.nhanVien));
   }
 });
 document.querySelector("#btnTimNV").addEventListener("click", () => {
@@ -96,7 +114,6 @@ document.querySelector("#btnTimNV").addEventListener("click", () => {
   );
   document.querySelector("#searchName").value = "";
 });
-document.querySelector("#btnDong").addEventListener("click", () => xoaDuLieu());
 document.querySelector("#btnCapNhat").addEventListener("click", () => {
   var thongTinCapNhat = layThongTin();
   if (kiemTraThongTin(thongTinCapNhat)) {
@@ -105,5 +122,7 @@ document.querySelector("#btnCapNhat").addEventListener("click", () => {
         dsnv.nhanVien[i] = thongTinCapNhat;
     }
     hienThiThongTin(dsnv.nhanVien);
+    localStorage.setItem("DSNV", JSON.stringify(dsnv.nhanVien));
   }
 });
+document.querySelector("#btnDong").addEventListener("click", () => xoaDuLieu());
